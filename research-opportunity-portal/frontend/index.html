@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="University Research Opportunity Portal — Browse, create, and manage research opportunities for students and faculty.">
+
+    <title>Research Opportunity Portal</title>
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Google Font: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- ========== NAVBAR ========== -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top glass-nav">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center gap-2" href="#" id="nav-brand">
+                <i class="bi bi-mortarboard-fill brand-icon"></i>
+                <span class="brand-text">ResearchHub</span>
+            </a>
+            <button class="btn btn-glow btn-sm" id="btn-show-create">
+                <i class="bi bi-plus-lg me-1"></i> New Opportunity
+            </button>
+        </div>
+    </nav>
+
+    <!-- ========== HERO SECTION ========== -->
+    <header class="hero-section" id="hero">
+        <div class="hero-bg-shapes">
+            <div class="shape shape-1"></div>
+            <div class="shape shape-2"></div>
+            <div class="shape shape-3"></div>
+        </div>
+        <div class="container text-center hero-content">
+            <h1 class="hero-title">
+                Discover Research<br>
+                <span class="gradient-text">Opportunities</span>
+            </h1>
+            <p class="hero-subtitle">
+                A centralized portal for faculty to post and students to discover
+                cutting-edge research positions across all departments.
+            </p>
+            <div class="hero-stats" id="hero-stats">
+                <div class="stat-item">
+                    <span class="stat-number" id="stat-total">0</span>
+                    <span class="stat-label">Total</span>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat-item">
+                    <span class="stat-number" id="stat-open">0</span>
+                    <span class="stat-label">Open</span>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat-item">
+                    <span class="stat-number" id="stat-closed">0</span>
+                    <span class="stat-label">Closed</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- ========== ALERT CONTAINER (for success / error messages) ========== -->
+    <div class="container" style="margin-top: 1rem;">
+        <div id="alert-container"></div>
+    </div>
+
+    <!-- ========== MAIN CONTENT ========== -->
+    <main class="container main-content">
+
+        <!-- ---------- OPPORTUNITY LIST VIEW ---------- -->
+        <section id="list-view">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <i class="bi bi-collection me-2"></i>All Opportunities
+                </h2>
+                <div class="filter-group">
+                    <button class="filter-btn active" data-filter="all">All</button>
+                    <button class="filter-btn" data-filter="Open">Open</button>
+                    <button class="filter-btn" data-filter="Closed">Closed</button>
+                </div>
+            </div>
+            <!-- Loading spinner -->
+            <div id="loading-spinner" class="text-center py-5">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="mt-2 text-muted">Loading opportunities...</p>
+            </div>
+            <!-- Cards grid -->
+            <div class="row g-4" id="opportunities-grid">
+                <!-- Cards are injected here by JavaScript -->
+            </div>
+            <!-- Empty state -->
+            <div id="empty-state" class="empty-state d-none">
+                <i class="bi bi-inbox empty-icon"></i>
+                <h3>No opportunities found</h3>
+                <p class="text-muted">Click "New Opportunity" to create one.</p>
+            </div>
+        </section>
+
+        <!-- ---------- DETAIL VIEW ---------- -->
+        <section id="detail-view" class="d-none">
+            <button class="btn btn-outline-secondary mb-4" id="btn-back-list">
+                <i class="bi bi-arrow-left me-1"></i> Back to List
+            </button>
+            <div id="detail-content">
+                <!-- Detail card is injected here by JavaScript -->
+            </div>
+        </section>
+
+        <!-- ---------- CREATE / EDIT FORM VIEW ---------- -->
+        <section id="form-view" class="d-none">
+            <button class="btn btn-outline-secondary mb-4" id="btn-back-from-form">
+                <i class="bi bi-arrow-left me-1"></i> Back to List
+            </button>
+            <div class="form-card">
+                <h2 class="form-title" id="form-title">
+                    <i class="bi bi-plus-circle me-2"></i>Create Opportunity
+                </h2>
+                <form id="opportunity-form" novalidate>
+                    <!-- Hidden field for edit mode -->
+                    <input type="hidden" id="form-id">
+
+                    <div class="row g-3">
+                        <!-- Title -->
+                        <div class="col-md-6">
+                            <label for="form-title-input" class="form-label">Title <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="form-title-input"
+                                   placeholder="e.g. AI Research Assistant" maxlength="200" required>
+                            <div class="invalid-feedback">Title is required (max 200 characters).</div>
+                        </div>
+
+                        <!-- Research Area -->
+                        <div class="col-md-6">
+                            <label for="form-area" class="form-label">Research Area <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="form-area"
+                                   placeholder="e.g. Artificial Intelligence" maxlength="100" required>
+                            <div class="invalid-feedback">Research area is required.</div>
+                        </div>
+
+                        <!-- Faculty Name -->
+                        <div class="col-md-6">
+                            <label for="form-faculty" class="form-label">Faculty Name <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="form-faculty"
+                                   placeholder="e.g. Dr. Ahmed Khan" maxlength="100" required>
+                            <div class="invalid-feedback">Faculty name is required.</div>
+                        </div>
+
+                        <!-- Department -->
+                        <div class="col-md-6">
+                            <label for="form-dept" class="form-label">Department <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="form-dept"
+                                   placeholder="e.g. Computer Science" maxlength="100" required>
+                            <div class="invalid-feedback">Department is required.</div>
+                        </div>
+
+                        <!-- Required Skills -->
+                        <div class="col-12">
+                            <label for="form-skills" class="form-label">Required Skills <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="form-skills"
+                                   placeholder="e.g. Python, PyTorch, NLP basics" maxlength="500" required>
+                            <div class="invalid-feedback">Required skills are required.</div>
+                        </div>
+
+                        <!-- Description -->
+                        <div class="col-12">
+                            <label for="form-desc" class="form-label">Description <span class="text-danger">*</span></label>
+                            <textarea class="form-control" id="form-desc" rows="4"
+                                      placeholder="Describe the research opportunity in detail..." required></textarea>
+                            <div class="invalid-feedback">Description is required.</div>
+                        </div>
+
+                        <!-- Positions Available -->
+                        <div class="col-md-6">
+                            <label for="form-positions" class="form-label">Positions Available <span class="text-danger">*</span></label>
+                            <input type="number" class="form-control" id="form-positions"
+                                   placeholder="e.g. 3" min="0" required>
+                            <div class="invalid-feedback">Positions must be a non-negative integer.</div>
+                        </div>
+
+                        <!-- Application Deadline -->
+                        <div class="col-md-6">
+                            <label for="form-deadline" class="form-label">Application Deadline <span class="text-danger">*</span></label>
+                            <input type="date" class="form-control" id="form-deadline" required>
+                            <div class="invalid-feedback">A valid deadline date is required.</div>
+                        </div>
+                    </div>
+
+                    <!-- Submit button -->
+                    <div class="mt-4 d-flex gap-2">
+                        <button type="submit" class="btn btn-glow" id="form-submit-btn">
+                            <i class="bi bi-check-lg me-1"></i> Create Opportunity
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary" id="btn-cancel-form">
+                            Cancel
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <!-- ========== FOOTER ========== -->
+    <footer class="site-footer">
+        <div class="container text-center">
+            <p class="mb-0">
+                <i class="bi bi-mortarboard-fill me-1"></i>
+                University Research Opportunity Portal &copy; 2026
+            </p>
+        </div>
+    </footer>
+
+    <!-- ========== DELETE CONFIRMATION MODAL ========== -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content glass-modal">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title" id="deleteModalLabel">
+                        <i class="bi bi-exclamation-triangle-fill text-danger me-2"></i>Confirm Delete
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to delete "<span id="delete-opp-title" class="fw-bold"></span>"?
+                    This action cannot be undone.
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger" id="btn-confirm-delete">
+                        <i class="bi bi-trash me-1"></i> Delete
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Application JavaScript -->
+    <script src="js/app.js"></script>
+</body>
+</html>
